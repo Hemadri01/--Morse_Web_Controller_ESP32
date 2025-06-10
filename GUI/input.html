@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Morse Input Page</title>
+  <style> 
+    #tcnt{
+        text-align: center;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 12px 20px;
+      box-sizing: border-box;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      background-color: #f8f8f8;
+      font-size: 16px;
+      resize: none;
+      text-transform: uppercase;
+    }
+    .bt1 {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .bt{
+        
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    #cnt{
+      display: none;
+    }
+    #exm1{
+        display: none;
+    }
+    #exm2{
+        display: none;
+    }
+   
+    #tim{
+        display: none;
+        text-align: center;
+   }
+   
+   #in3{
+    width: 40%;
+    font-size: 26px;
+    text-align: center;
+   }
+
+   #ti2{
+    display: none;
+   }
+
+   #link{
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+   }
+
+   #link1{
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: none;
+   }
+
+  </style>
+</head>
+<body>
+
+
+<div id="tcnt">
+    <h2 style="text-align: center;">Is there Test Input?</h2>
+    <br>
+    <button type="button" id="ye" style="margin-right: 10%;" class="bt" onclick="myfunc()">YES</button>
+    <button type="button" id="n1" class="bt" onclick="myfunc1()">NO</button>
+</div>
+
+<div id="cnt">
+    <h2 style="text-align: center;">Test Input</h2>
+    <br>
+    <textarea name="test_input1" placeholder="ABCDE FGHIJK ....." id="ti1" oninput="this.value = this.value.toUpperCase()"></textarea>
+    <br>
+    <p id="link" onclick="inp()">Add type 2 test input</p>
+    <br>
+    <textarea name="test_input2" placeholder="ABCDE FGHIJK ....." id="ti2" oninput="this.value = this.value.toUpperCase()"></textarea>
+    <br>
+    <p id="link1" onclick="inpu()">Cancel</p>
+    <br>
+    <input type="checkbox" id="ses" name="ses" />
+    <label for="ses">Add Starting and ending sequence</label>
+    <br><br>
+    <button type="button" class="bt1" onclick="myft()">Submit</button>
+</div>
+
+<div id="exm1">
+    <h2 style="text-align: center;">Exam 1 Input</h2>
+    <br>
+    <textarea name="input1" placeholder="ABCDE FGHIJK ....." id="in1" oninput="this.value = this.value.toUpperCase()"></textarea>
+    <button type="submit" class="bt1" onclick="myf1()">Submit</button>
+</div>
+
+<div id="exm2">
+    <h2 style="text-align: center;">Exam 2 Input</h2>
+    <br>
+    <textarea name="input2" placeholder="AB3C DEF4 ...." id="in2" oninput="this.value = this.value.toUpperCase()"></textarea>
+    <button type="submit" class="bt1" onclick="myf2()"> Submit</button>
+</div>
+
+<div id="tim">
+    <h2 style="text-align: center;">Input Time (in mins and sec)</h2>
+    <br>
+    <input type="time" id="in3">
+    <br><br><br>
+    <button type="submit" class="bt1" onclick="myf3()"> Submit</button>
+</div>
+
+<script>
+
+  var gateway = `ws://${window.location.hostname}/ws`;
+  var websocket;
+  var t_inp1;
+  var t_inp2;
+  var seq;
+  var ex1_inp;
+  var ex2_inp;
+  var ti_inp;
+
+  function inpu(){
+    document.getElementById("ti2").style.display = "none";
+    document.getElementById("link1").style.display = "none";
+    console.log((document.getElementById("link1").style.display));
+    document.getElementById("link").style.display = "inline-block";
+  }
+
+  function inp() {
+    document.getElementById("ti2").style.display = "block";
+    document.getElementById("link").style.display = "none";
+    document.getElementById("ses").checked = true;
+    document.getElementById("link1").style.display = "inline-block";
+    console.log((document.getElementById("link1").style.display));
+  }
+
+  window.addEventListener('load', onLoad);
+  function onLoad(event) {
+    initWebSocket();    
+    document.getElementById("link1").style.display = "none";
+    console.log((document.getElementById("link1").style.display));
+  }
+
+  function initWebSocket() {
+    console.log('Trying to open a WebSocket connection...');
+    websocket = new WebSocket(gateway);
+    websocket.onopen    = onOpen;
+    websocket.onclose   = onClose;
+    websocket.onmessage = onMessage;
+  }
+
+  function testJSON(text) {
+    if (typeof text !== "string") {
+      return false;
+    }
+    try {
+      JSON.parse(text);
+      return true;
+    } 
+    catch (error) {
+      return false;
+    }
+  } 
+
+  function onMessage(event) {
+    console.log(event.data);
+    let s = event.data;
+    console.log(s);
+    if(testJSON(s))
+    {
+      console.log(s);
+      var myObj = JSON.parse(s);
+      var keys = Object.keys(myObj);
+
+      for (var i = 0; i < keys.length; i++)
+      {
+        var key = keys[i];
+        document.getElementById(key).value = myObj[key];
+        console.log(document.getElementById(key).value);
+      }
+
+      if(document.getElementById("ti1").value == "@")
+      {
+        document.getElementById("ti1").value = "";
+      }
+
+      if(document.getElementById("ti2").value == "@")
+      {
+        document.getElementById("ti2").value = "";
+      }
+
+    }
+
+  }
+
+  function onOpen(event) {
+    console.log('Connection opened');
+    websocket.send("getDefaultValue");
+    console.log("getDefaultValue");
+    console.log((document.getElementById("link1").style.display));
+  }
+  
+  function onClose(event) {
+    console.log('Connection closed');
+    setTimeout(initWebSocket, 2000);
+  }
+  
+  function myfunc(){
+    document.getElementById("cnt").style.display = "block";
+    document.getElementById("tcnt").style.display = "none";
+  }
+
+  function myfunc1(){
+    document.getElementById("ti1").value = "@";
+    document.getElementById("ti2").value = "@";
+    document.getElementById("tcnt").style.display = "none";
+    document.getElementById("exm1").style.display = "block";
+    t_inp1 = document.getElementById("ti1").value;
+    t_inp2 = document.getElementById("ti2").value;
+    console.log(t_inp1);
+    console.log(typeof t_inp1);
+  }
+
+  function myft(){
+    t_inp1 = document.getElementById("ti1").value;
+    t_inp2 = document.getElementById("ti2").value;
+    console.log((document.getElementById("link1").style.display));
+    if((document.getElementById("link1").style.display == "none") || (t_inp2 == ""))
+    {
+      t_inp2 = "@";
+    }
+    document.getElementById("cnt").style.display = "none";
+    document.getElementById("exm1").style.display = "block";
+    console.log(t_inp1);
+    console.log(typeof t_inp1);
+    console.log(t_inp2);
+    console.log(typeof t_inp2);
+  }
+
+  function myf1(){
+    ex1_inp = document.getElementById("in1").value;
+    document.getElementById("exm1").style.display = "none";
+    document.getElementById("exm2").style.display = "block";
+    console.log(ex1_inp);
+    console.log(typeof ex1_inp);
+    
+  }
+  
+  function myf2(){
+    ex2_inp = document.getElementById("in2").value;
+    console.log(ex2_inp);
+    console.log(typeof ex2_inp);
+    document.getElementById("exm2").style.display = "none";
+    document.getElementById("tim").style.display = "block";
+  }
+
+  function myf3(){
+    var x = document.getElementById("in3").value;
+    ti_inp = (parseInt(x.slice(0,2))*60 + parseInt(x.slice(3)))*1000;
+    console.log(ti_inp);
+    console.log(typeof ti_inp);
+    let obj ={};
+    if((document.getElementById("ses").checked == true) || t_inp2 != "@")
+    {
+      seq = true;
+    }
+    else
+    {
+      seq = false;
+    }
+    console.log(seq);
+    obj = {
+      Pagecode: 2,
+      Test_input1: t_inp1,
+      Test_input2: t_inp2,
+      Seq: seq,
+      Exam1_input: ex1_inp,
+      Exam2_input: ex2_inp,
+      Time_input: ti_inp
+    }
+    const myJSON = JSON.stringify(obj);
+    console.log(myJSON);
+    websocket.send(myJSON);
+    window.location.assign("http://192.168.4.1/output");
+  }
+
+</script>
+
+</body>
+</html>
+
+

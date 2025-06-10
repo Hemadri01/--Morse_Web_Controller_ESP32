@@ -31,6 +31,6 @@ This project is an automated Morse code transmission system designed to simplify
 - **Captive portal** planned for smoother user experience (not yet implemented).
 
 ## Future Improvements
+- Solving **Guru Meditation Error** issues in some edge cases.
 - Implementing captive portal for seamless connection.
 - Enhancing web UI responsiveness.
-- Optimizing Morse transmission for longer messages.

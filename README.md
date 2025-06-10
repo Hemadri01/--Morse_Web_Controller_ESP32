@@ -5,7 +5,7 @@
 # Morse Code Automation System (ESP32 & FreeRTOS)
 
 ## Overview
-This project is an automated Morse code transmission system designed to simplify message generation using an ESP32 microcontroller. Originally developed on Arduino, the system was later enhanced with ESP32 to allow wireless control via a web-based interface. The project was inspired by real-world usage in marine training exercises, helping streamline Morse code practice.
+This project is an automated Morse code transmission system designed to simplify message generation using an ESP32 microcontroller. Originally developed on Arduino, the system was later enhanced with ESP32 to allow wireless control via a web-based interface. The project was inspired to help teachers in marine training institutes, helping streamline Morse code practice.
 
 ## Features
 - **Web-Based Control** – Connect to the ESP32 AP and interact via a simple web interface.
